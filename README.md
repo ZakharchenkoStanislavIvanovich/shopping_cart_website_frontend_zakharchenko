@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### Shopping App Frontend
 
-## Getting Started
+Frontend for a scalable full‑stack shopping application built with Next.js (App Router), React Server Components, Tailwind CSS and Material UI. Implements secure server actions, image uploads, Stripe checkout integration, client and server caching strategies, and production deployment on Vercel.
 
-First, run the development server:
+Author: Stanislav Zakharchenko
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+### Technologies
+
+- **Framework:** Next.js (App directory, Server Components, Server Actions)  
+- **UI:** React, Material UI, Tailwind CSS  
+- **State & Data fetching:** Next.js fetch with caching, React Context for ephemeral UI state  
+- **Authentication:** JWT via secure HttpOnly cookies and server actions  
+- **Payments:** Stripe (client + server integration, webhooks handled by backend)  
+- **File uploads:** Direct-to-server and presigned S3 uploads (UI flows)  
+- **Realtime:** WebSocket client for receiving product/order events  
+- **Deployment:** Vercel (production), optional static export for edge CDN
+
+---
+
+### Project structure
+
+```
+app/
+├── layout.tsx
+├── page.tsx
+├── dashboard/
+├── products/
+│   ├── [id]/page.tsx
+│   ├── create/
+│   └── components/
+├── api/
+│   ├── auth/       # server actions for login/logout
+│   ├── upload/     # endpoints for presigned URLs or direct uploads
+│   └── stripe/     # client-safe stripe routes
+components/
+├── ui/             # reusable MUI+Tailwind components
+├── form/           # validated forms with react-hook-form
+hooks/
+├── useCart.ts
+├── useAuth.ts
+lib/
+├── fetcher.ts      # Next.js fetch wrappers with caching options
+├── stripe.ts
+styles/
+public/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Security and best practices
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Authentication:** Use server actions to set HttpOnly, Secure cookies for JWTs; avoid storing tokens in localStorage.  
+- **CSR vs SSR:** Use Server Components for data that doesn’t require client interactivity; isolate interactive logic in Client Components.  
+- **Input validation:** Validate forms client-side and rely on backend DTO validation for authoritative checks.  
+- **File uploads:** Validate file MIME type and size client-side; prefer presigned S3 uploads for large files.  
+- **CSP and headers:** Configure Content Security Policy and secure headers via Vercel or proxy.  
+- **Secrets:** Store Stripe publishable key in Vercel env; use backend for secret operations.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### Local setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone and install
+```bash
+git clone https://github.com/<your-username>/shopping-app-frontend.git
+cd shopping-app-frontend
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Environment
+```bash
+cp .env.example .env.local
+# Set at minimum:
+# NEXT_PUBLIC_API_URL=http://localhost:3001
+# NEXT_PUBLIC_STRIPE_PK=pk_live_or_pk_test
+# NEXTAUTH_URL=http://localhost:3000
+```
 
-## Deploy on Vercel
+3. Run dev server
+```bash
+npm run dev
+# open http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Build and preview
+```bash
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+### Integrations & deployment
+
+- **API integration:** Communicate with backend API over HTTPS; use Next.js server actions and fetch with revalidate options to control cache and avoid duplicate requests.  
+- **Stripe:** Create checkout sessions server-side; use client to redirect to Stripe Checkout or handle Payment Element flows; verify payment status via backend webhooks.  
+- **Uploads:** Use server endpoint to request presigned S3 URLs, then upload directly from the browser; update product records via server action after successful upload.  
+- **Realtime:** Connect to backend WebSocket gateway using JWT from HttpOnly cookie; handle reconnection and event deduplication in client.  
+- **Deployment:** Deploy to Vercel; add environment variables in Vercel dashboard, set up Preview and Production branches, enable automatic deploys on push. Configure redirects and rewrite rules for API proxying if needed.
+
+---
+
+### Useful scripts
+
+- **Dev:** npm run dev  
+- **Build:** npm run build  
+- **Start (preview):** npm run start  
+- **Lint:** npm run lint  
+- **Format:** npm run format  
+- **Test:** npm run test
+
+---
+
+### Contact
+
+Open issues or pull requests on this repository. For direct questions, contact Stanislav Zakharchenko via the repository profile email.
