@@ -1,15 +1,22 @@
-import { API_URL } from "@/app/common/constants/api";
-import { getErrorMessage } from "./errors";
 import { cookies } from "next/headers";
+import { getErrorMessage } from "./errors";
+import { API_URL } from "@/app/common/constants/api";
 
-const getHeaders = () => ({
-    Cookie: cookies().toString()
-})
+// const getHeaders = () => ({
+//     Cookie: cookies().toString()
+// })
+
+const getHeaders = async () => {
+  const cookieStore = await cookies();
+  return {
+    Cookie: cookieStore.toString(),
+  };
+};
 
 export const post = async (path: string, formData: FormData) => {
-  const res = await fetch(`${API_URL}/users`, {
+    const res = await fetch(`${API_URL}/${path}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...getHeaders() },
+        headers: { "Content-Type": "application/json", ...(await getHeaders()) },
         body: JSON.stringify(Object.fromEntries(formData)),
     });
     const parsedRes = await res.json();
@@ -17,11 +24,11 @@ export const post = async (path: string, formData: FormData) => {
         return { error: getErrorMessage(parsedRes) };
     }
     return { error: "" };
-};
+}
 
 export const get = async (path: string) => {
     const res = await fetch(`${API_URL}/${path}`, {
-        headers: { ...getHeaders() },
+        headers: { ...(await getHeaders()) },
     });
     return res.json();
-};
+}
