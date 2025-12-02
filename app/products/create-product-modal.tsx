@@ -1,6 +1,9 @@
 "use client"
 
-import { Box, Modal } from "@mui/material";
+import { Box, Button, Modal, Stack, TextField } from "@mui/material";
+import { useState } from "react";
+import { FormResponse } from "../common/form-response.interface";
+import createProduct from "./create-product";
 
 const styles = {
     position: "absolute",
@@ -20,9 +23,31 @@ interface CreateProductModalProps {
 }
 
 export default function CreateProductModal({ open, handleClose }: CreateProductModalProps) {
+    const [response, setResponse] = useState<FormResponse>();
+
+    const onClose = () => {
+        setResponse(undefined);
+        handleClose();
+    };
+
     return (
-        <Modal open={open} onClose={handleClose}>
-            <Box sx={styles}></Box>
+        <Modal open={open} onClose={onClose}>
+            <Box sx={styles}>
+                <form className="w-full mas-w-xs" action={async (formData) => {
+                    const response = await createProduct(formData);
+                    setResponse(response);
+                    if (!response.error) {
+                        onClose();
+                    }
+                }}>
+                      <Stack spacing={2}>
+                        <TextField name = "name" label="Name" variant ="outlined" required helperText={response?.error} error={!!response?.error} />
+                        <TextField name = "description" label="Description" variant ="outlined" required helperText={response?.error} error={!!response?.error} />
+                        <TextField name = "price" label="Price" variant ="outlined" required helperText={response?.error} error={!!response?.error} />
+                        <Button type="submit" variant="contained">Submit</Button>
+                      </Stack>
+                </form>
+            </Box>
         </Modal>
     )
 }

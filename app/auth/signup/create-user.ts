@@ -1,6 +1,6 @@
 "use server"
 
-import { FormError } from "@/app/common/form-error.interface";
+import { FormError } from "@/app/common/form-response.interface";
 import { API_URL } from "@/app/common/constants/api"
 import { getErrorMessage } from "@/util/errors";
 import { post } from "@/util/fetch";
