@@ -6,7 +6,7 @@ import { API_URL } from "@/app/common/constants/api";
 //     Cookie: cookies().toString()
 // })
 
-const getHeaders = async () => {
+export const getHeaders = async () => {
   const cookieStore = await cookies();
   return {
     Cookie: cookieStore.toString(),
@@ -23,7 +23,7 @@ export const post = async (path: string, formData: FormData) => {
     if (!res.ok) {
         return { error: getErrorMessage(parsedRes) };
     }
-    return { error: "" };
+    return { error: "", data: parsedRes };
 }
 
 export const get = async <T>(path: string, tags?: string[]) => {
