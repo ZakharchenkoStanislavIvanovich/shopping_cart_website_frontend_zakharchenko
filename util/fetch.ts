@@ -13,18 +13,22 @@ export const getHeaders = async () => {
   };
 };
 
-export const post = async (path: string, formData: FormData) => {
-    const res = await fetch(`${API_URL}/${path}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...(await getHeaders()) },
-        body: JSON.stringify(Object.fromEntries(formData)),
-    });
-    const parsedRes = await res.json();
-    if (!res.ok) {
-        return { error: getErrorMessage(parsedRes) };
-    }
-    return { error: "", data: parsedRes };
-}
+export const post = async <T>(
+  path: string,
+  data: FormData | object
+): Promise<{ error: string; data?: T }> => {
+  const body = data instanceof FormData ? Object.fromEntries(data) : data;
+  const res = await fetch(`${API_URL}/${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(await getHeaders()) },
+    body: JSON.stringify(body),
+  });
+  const parsedRes = await res.json();
+  if (!res.ok) {
+    return { error: getErrorMessage(parsedRes) };
+  }
+  return { error: "", data: parsedRes as T };
+};
 
 export const get = async <T>(path: string, tags?: string[]) => {
     const res = await fetch(`${API_URL}/${path}`, {
